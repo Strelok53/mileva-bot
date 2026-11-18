@@ -15,69 +15,30 @@ MEMES = [
 ]
 
 
+# Definišemo GIF-ove za svaku stavku
+GIF_SLJIVA = "https://media.giphy.com/media/8vUEXZA2me7vnuUvrs/giphy.gif"
+GIF_PIVO = "https://media.giphy.com/media/13CoXDiaCcCoyY/giphy.gif"
+GIF_CEVAPI = "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif"
+GIF_KARADJORDJEVA = "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif"
+GIF_SALATA = "https://media.giphy.com/media/3o7bu3hJmCG910E1EI/giphy.gif"
+GIF_KAFA = "https://media.giphy.com/media/J20Z2SH5WmCnzSrbqA/giphy.gif"
+
+MEMES = [
+    "https://i.imgur.com/Kz6u79n.jpg",
+    "https://i.imgur.com/wV2Q98t.jpg",
+    "https://i.imgur.com/3X12vQz.jpg",
+]
+
+
 @bot.event
 async def on_ready():
     print(f"Mileva je spremna! Ulogovana kao {bot.user}")
 
 
+# 1. Osnovne komande
 @bot.command(name="zdravo")
 async def zdravo(ctx):
     await ctx.send(f"Zdravo {ctx.author.mention}! Šta ćeš da popiješ? 🍻")
-
-
-@bot.command(name="pivo")
-async def pivo(ctx):
-    await ctx.send(f"Stiže jedno hladno za {ctx.author.name}! 🍺")
-
-# Definišemo GIF za kafu
-GIF_KAFA = "https://media.giphy.com/media/J20Z2SH5WmCnzSrbqA/giphy.gif"
-
-
-# Komanda za kafu: !kafa
-@bot.command(name="kafa")
-async def kafa(ctx):
-  embed = discord.Embed(
-      title="☕ Domaća kafa i ratluk",
-      description=(
-          "Sveže kuvana domaća kafa iz džezve, sa kockom šećera i ratlukom sa"
-          " orasima!"
-      ),
-      color=discord.Color.from_rgb(139, 69, 19),  # Braon kafanska boja
-  )
-
-  embed.add_field(name="Cena", value="— **120 din**", inline=False)
-  embed.set_footer(text="Idealno za otrežnjenje posle fajronta.")
-
-  # Šalje poruku, embed i GIF
-  await ctx.send(f"Evo jedne domaće za otrežnjenje, {ctx.author.mention}! ☕", embed=embed)
-  await ctx.send(GIF_KAFA)
-
-# Definišemo GIF za ćevape
-
-
-# Komanda za ćevape: !cevapi
-@bot.command(name="cevapi")
-async def cevapi(ctx):
-  embed = discord.Embed(
-      title="🥩 Domaći ćevapi sa kajmakom",
-      description=(
-          "Sočni roštilj sa vrućom lepinjom, sitno seckanim lukom i domaćim"
-          " kajmakom!"
-      ),
-      color=discord.Color.red(),
-  )
-
-  embed.add_field(name="Mala porcija (5 kom)", value="— **350 din**", inline=False)
-  embed.add_field(
-      name="Velika porcija (10 kom)", value="— **650 din**", inline=False
-  )
-  embed.set_footer(text="Mileva ih vadi direktno sa skare!")
-
-  # Šalje Embed meni i GIF u istoj poruci
-  await ctx.send(
-      f"Stiže roštilj za {ctx.author.mention}! 🥩", embed=embed
-  )
-
 
 
 @bot.command(name="meme")
@@ -86,7 +47,7 @@ async def meme(ctx):
     await ctx.send(slika)
 
 
-# Kafanski meni
+# 2. Glavni meni pregled (!meni)
 @bot.command(name="meni")
 async def meni(ctx):
     embed = discord.Embed(
@@ -96,37 +57,141 @@ async def meni(ctx):
     )
     embed.add_field(
         name="1. 🥃 Domaća šljivovica",
-        value="Prepečenica iz dedinog podruma — **150 din**",
+        value="Prepečenica iz dedinog podruma — **150 din** (`!sljiva`)",
         inline=False,
     )
     embed.add_field(
         name="2. 🍺 Hladno točeno pivo (0.5l)",
-        value="Orošena krigla pravo iz frižidera — **220 din**",
+        value=(
+            "Orošena krigla pravo iz frižidera — **220 din** (`!pivo`)"
+        ),
         inline=False,
     )
     embed.add_field(
         name="3. 🥩 Ćevapi na kajmaku (10 kom)",
-        value="Domaća lepinja, luk i kajmak — **650 din**",
+        value=(
+            "Domaća lepinja, luk i kajmak — **650 din** (`!cevapi`)"
+        ),
         inline=False,
     )
     embed.add_field(
         name="4. 🥓 Karađorđeva šnicla",
-        value="Sa pomfritom i tartar sosom — **890 din**",
+        value=(
+            "Sa pomfritom i tartar sosom — **890 din** (`!karadjordjeva`)"
+        ),
         inline=False,
     )
     embed.add_field(
         name="5. 🥗 Šopska salata",
-        value="Svež paradajz, krastavac i ovčiji sir — **280 din**",
+        value=(
+            "Svež paradajz, krastavac i ovčiji sir — **280 din** (`!salata`)"
+        ),
         inline=False,
     )
     embed.add_field(
         name="6. ☕ Domaća kafa i ratluk",
-        value="Za otrežnjenje posle fajronta — **120 din**",
+        value=(
+            "Za otrežnjenje posle fajronta — **120 din** (`!kafa`)"
+        ),
         inline=False,
     )
-    embed.set_footer(text="Za porudžbine samo vikni Milevu!")
+    embed.set_footer(
+        text="Kucaj komandu u zagradi da poručiš željenu stavku!"
+    )
     await ctx.send(embed=embed)
 
+
+# --- POJEDINACNE KOMANDE ZA SVAKU STAVKU ---
+
+# 1. Šljivovica (!sljiva)
+@bot.command(name="sljiva")
+async def sljiva(ctx):
+    embed = discord.Embed(
+        title="🥃 Domaća šljivovica",
+        description="Prepečenica iz dedinog podruma, greje dušu!",
+        color=discord.Color.orange(),
+    )
+    embed.add_field(name="Cena", value="— **150 din**", inline=False)
+    await ctx.send(
+        f"Živeli, {ctx.author.mention}! Stiže jedna ljuta! 🥃", embed=embed
+    )
+    await ctx.send(GIF_SLJIVA)
+
+
+# 2. Pivo (!pivo)
+@bot.command(name="pivo")
+async def pivo(ctx):
+    embed = discord.Embed(
+        title="🍺 Hladno točeno pivo (0.5l)",
+        description="Orošena krigla, taman za ove vrućine.",
+        color=discord.Color.gold(),
+    )
+    embed.add_field(name="Cena", value="— **220 din**", inline=False)
+    await ctx.send(
+        f"Stiže jedno hladno točeno za {ctx.author.mention}! 🍺", embed=embed
+    )
+    await ctx.send(GIF_PIVO)
+
+
+# 3. Ćevapi (!cevapi)
+@bot.command(name="cevapi")
+async def cevapi(ctx):
+    embed = discord.Embed(
+        title="🥩 Ćevapi na kajmaku (10 kom)",
+        description="Domaća lepinja, sitno seckan luk i topao kajmak.",
+        color=discord.Color.red(),
+    )
+    embed.add_field(name="Cena", value="— **650 din**", inline=False)
+    await ctx.send(
+        f"Evo svežih ćevapa sa skare za {ctx.author.mention}! 🥩", embed=embed
+    )
+    await ctx.send(GIF_CEVAPI)
+
+
+# 4. Karađorđeva šnicla (!karadjordjeva)
+@bot.command(name="karadjordjeva")
+async def karadjordjeva(ctx):
+    embed = discord.Embed(
+        title="🥓 Karađorđeva šnicla",
+        description="Kraljevski uštipak punjen kajmakom, sa pomfritom i tartar sosom.",
+        color=discord.Color.dark_gold(),
+    )
+    embed.add_field(name="Cena", value="— **890 din**", inline=False)
+    await ctx.send(
+        f"Gospođska porcija Karađorđeve za {ctx.author.mention}! 🥓", embed=embed
+    )
+    await ctx.send(GIF_KARADJORDJEVA)
+
+
+# 5. Šopska salata (!salata)
+@bot.command(name="salata")
+async def salata(ctx):
+    embed = discord.Embed(
+        title="🥗 Šopska salata",
+        description="Svež paradajz, krastavac, paprika i brdo rendanog ovčijeg sira.",
+        color=discord.Color.green(),
+    )
+    embed.add_field(name="Cena", value="— **280 din**", inline=False)
+    await ctx.send(
+        f"Da se osvežiš, {ctx.author.mention}! Evo domaće šopske. 🥗",
+        embed=embed,
+    )
+    await ctx.send(GIF_SALATA)
+
+
+# 6. Kafa (!kafa)
+@bot.command(name="kafa")
+async def kafa(ctx):
+    embed = discord.Embed(
+        title="☕ Domaća kafa i ratluk",
+        description="Sveže kuvana domaća iz džezve, sa ratlukom.",
+        color=discord.Color.from_rgb(139, 69, 19),
+    )
+    embed.add_field(name="Cena", value="— **120 din**", inline=False)
+    await ctx.send(
+        f"Evo jedne domaće za otrežnjenje, {ctx.author.mention}! ☕", embed=embed
+    )
+    await ctx.send(GIF_KAFA)
 
 # Nova igra: Pogađanje brojeva (!broj <1-10>)
 @bot.command(name="broj")
