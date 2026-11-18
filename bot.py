@@ -239,5 +239,94 @@ async def on_member_join(member):
       )
       break
 
+# --- NOVA IGRA: POGAĐANJE KAFANSKIH REČI ---
+
+# Reči koje bot može da zamisli
+KAFANSKE_RECI = [
+    "rakija",
+    "kafana",
+    "kelner",
+    "burek",
+    "pivo",
+    "harmonika",
+    "meze",
+    "prase",
+]
+
+# Rečnik da pratimo aktivnu igru na serveru
+aktivne_igre = {}
+
+
+@bot.command(name="pokreni_igru")
+async def pokreni_igru(ctx):
+  # Izaberi nasumičnu reč
+  tajna_rec = random.choice(KAFANSKE_RECI)
+  # Zapamti reč za ovaj server/kanal
+  aktivne_igre[ctx.guild.id] = {
+      "rec": tajna_rec,
+      "pogodjeno": ["_"] * len(tajna_rec),
+      "promasaji": 0,
+  }
+
+  prikaz = " ".join(aktivne_igre[ctx.guild.id]["pogodjeno"])
+  await ctx.send(
+      f"🎮 **Nova kafanska igra je počela!**\n"
+      f"Mileva je zamislila reč od **{len(tajna_rec)}** slova: `{prikaz}`\n"
+      f"Pogađaj slovo komandom: `!slovo [slovo]` (na primer `!slovo a`)"
+  )
+
+
+@bot.command(name="slovo")
+async def pogodite_slovo(ctx, slovo: str = None):
+  if ctx.guild.id not in aktivne_igre:
+    await ctx.send(
+        "⚠️ Trenutno nema aktivne igre! Pokreni je komandom `!pokreni_igru`."
+    )
+    return
+
+  if not slovo or len(slovo) != 1:
+    await ctx.send("❌ Moraš da uneseš tačno **jedno slovo**! Primer: `!slovo k`")
+    return
+
+  slovo = slovo.lower()
+  igra = aktivne_igre[ctx.guild.id]
+  tajna_rec = igra["rec"]
+
+  if slovo in tajna_rec:
+    # Otkrij slovo na svim pozicijama gde se nalazi
+    for i, s in enumerate(tajna_rec):
+      if s == slovo:
+        igra["pogodjeno"][i] = slovo
+
+    prikaz = " ".join(igra["pogodjeno"])
+
+    # Proveri da li je cela reč pogođena
+    if "_" not in igra["pogodjeno"]:
+      await ctx.send(
+          f"🎉 Bravo {ctx.author.mention}! Pogodio/la si celu reč: **{tajna_rec}**!"
+          " Mileva te časti pićem! 🍻"
+      )
+      del aktivne_igre[ctx.guild.id]  # Završi igru
+    else:
+      await ctx.send(
+          f"✅ Bravo! Slovo **{slovo}** je u reči: `{prikaz}`\nSamo tako"
+          " nastavi!"
+      )
+  else:
+    igra["promasaji"] += 1
+    prikaz = " ".join(igra["pogodjeno"])
+    await ctx.send(
+        f"❌ Nema slova **{slovo}**! Trenutno stanje: `{prikaz}` (Greške:"
+        f" {igra['promasaji']}/5)"
+    )
+
+    if igra["promasaji"] >= 5:
+      await ctx.send(
+          f"💀 Propali ste! Mileva je popila sve zbog vaših promašaja. Tražena"
+          f" reč je bila: **{tajna_rec}**."
+      )
+      del aktivne_igre[ctx.guild.id]
+
+
 # Ovde nalepi svoj pravi token
 bot.run(os.getenv("TOKEN"))
