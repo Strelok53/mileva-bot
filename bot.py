@@ -1,5 +1,4 @@
 import os
-bot.run(os.environ{'TOKEN'})
 import random
 import discord
 from discord.ext import commands
@@ -176,4 +175,4 @@ async def on_member_join(member):
       break
 
 # Ovde nalepi svoj pravi token
-bot.run(os.environ['TOKEN'])
+bot.run(os.getenv("TOKEN"))
